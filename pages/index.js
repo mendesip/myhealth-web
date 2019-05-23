@@ -1,80 +1,108 @@
 import * as React from "react";
-import TextField from "@material-ui/core/TextField";
-import withStyles from "@material-ui/core/styles/withStyles";
-import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import Link from "next/link";
 
-const styles = theme => ({
-    textField: {
-        marginLeft: theme.spacing.unit,
-        marginRight: theme.spacing.unit,
-    },
-    button: {
-        margin: theme.spacing.unit,
-    },
-    root: {
-        ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit * 2,
-        paddingBottom: theme.spacing.unit * 2,
-    }
-});
+import AccessForm from "../components/AccessForm";
+import NCDList from "../components/NCDList";
+import DialogAccess from "../components/DialogAccess";
+import Dashboard from "../components/Dashboard";
 
-class Index extends React.Component{
+export default class Index extends React.Component{
+
+    state = {
+        susNumber: null,
+        accessCode: null,
+        patient: null,
+        ncds: null,
+        selectedNcd: null,
+        registers: null,
+        dialogAccessOpen: false
+    };
+
+    setSelectedNcd = (ncd) => {
+        this.setState({selectedNcd: ncd});
+    };
+
+    handleClose = () => {
+        this.setState({dialogAccessOpen: false});
+    };
+
+    handleOpen = () => {
+        this.setState({dialogAccessOpen: true});
+    };
+
+    handleSusNumberInput = (event) => {
+        this.setState({susNumber: event.target.value});
+    };
+    handleAccessCodeInput = (event) => {
+        this.setState({accessCode: event.target.value});
+    };
+
+    loadPatient = async () => {
+        const requestBody = {
+            request_data: {
+                sus_number: this.state.susNumber.replace(/ /g,''),
+                access_token: this.state.accessCode.toUpperCase()
+            }
+        };
+
+        const userAction = async () => {
+            const response = await fetch('http://localhost:3000/api/patient/loadByToken', {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            return await response.json();
+        };
+
+        const resp = await userAction();
+
+        if(resp.success) {
+            this.setState({ncds: resp.monitors});
+            this.setState({registers: resp.registers});
+            this.setState({patient: resp.patient_data});
+        }else{
+            this.handleOpen();
+        }
+    };
+
     render() {
-        const { classes } = this.props;
         return (
             <Grid container
                   alignItems="center"
                   justify="center"
                   style={{height: "100%"}}>
 
-                <Paper className={classes.root} elevation={1}>
-                    <Grid container
-                          alignItems="center"
-                          direction="column">
+                {this.state.patient === null && <AccessForm
+                    loadPatient={this.loadPatient}
+                    handleAccessCodeInput={this.handleAccessCodeInput}
+                    handleSusNumberInput={this.handleSusNumberInput}
+                />}
+                {(this.state.patient !== null && this.state.selectedNcd === null) && <NCDList
+                    ncds={this.state.ncds}
+                    selectNcd={this.setSelectedNcd}
+                />}
 
-                        <Typography variant="h5" component="h3">
-                            myHealth
-                        </Typography>
+                {this.state.selectedNcd !== null && <Dashboard />}
 
-                        <TextField
-                            id="outlined-email-input"
-                            label="SUS Number"
-                            className={classes.textField}
-                            type="text"
-                            name="susNumber"
-                            margin="normal"
-                            variant="outlined"
-                        />
+                <DialogAccess
+                    open={this.state.dialogAccessOpen}
+                    handleClose={this.handleClose}
+                    fullScreen={true}
+                />
 
-                        <TextField
-                            id="oil-input"
-                            label="Access Code"
-                            className={classes.textField}
-                            type="text"
-                            name="susNumber"
-                            margin="normal"
-                            variant="outlined"
-                        />
-
-                        <Link href="/ncd">
-
-                            <Button type="submit" variant="contained" color="primary" className={classes.button}>
-                                Entrar
-                            </Button>
-
-                        </Link>
-
-                    </Grid>
-
-                </Paper>
+                <style jsx global>{`
+                    html, body {
+                        height: 100%;
+                    }
+                    #__next {
+                        height: 100%;
+                    }
+                `}</style>
 
             </Grid>
         );
     }
 }
-
-export default withStyles(styles)(Index);

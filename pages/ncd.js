@@ -8,7 +8,6 @@ import Link from "next/link";
 import ListItem from "@material-ui/core/ListItem";
 import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
 
 const styles = theme => ({
     textField: {
@@ -26,6 +25,10 @@ const styles = theme => ({
 });
 
 class NCD extends React.Component{
+    state = {
+        ncds: []
+    };
+
     render() {
         const { classes } = this.props;
         return (
@@ -34,40 +37,7 @@ class NCD extends React.Component{
                   justify="center"
                   style={{height: "100%"}}>
 
-                <Paper className={classes.root} elevation={1}>
-                    <Grid container
-                          alignItems="center"
-                          direction="column">
 
-                        <Typography variant="h5" component="h3">
-                            myHealth
-                        </Typography>
-
-                        <List component="nav">
-                            <Link href="/dashboard">
-                                <ListItem button>
-                                    <ListItemText primary="Arterial hypertension" />
-                                </ListItem>
-                            </Link>
-                            <Link href="/dashboard">
-                                <ListItem button>
-                                    <ListItemText primary="Coronary artery disease" />
-                                </ListItem>
-                            </Link>
-                            <Link href="/dashboard">
-                                <ListItem button>
-                                    <ListItemText primary="Diabetes" />
-                                </ListItem>
-                            </Link>
-                            <Link href="/dashboard">
-                                <ListItem button>
-                                    <ListItemText primary="Obesity" />
-                                </ListItem>
-                            </Link>
-                        </List>
-                    </Grid>
-
-                </Paper>
 
             </Grid>
         );
