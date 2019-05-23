@@ -46,7 +46,7 @@ export default class Index extends React.Component{
         };
 
         const userAction = async () => {
-            const response = await fetch('http://localhost:3000/api/patient/loadByToken', {
+            const response = await fetch('https://myhealth-api.herokuapp.com/api/patient/loadByToken', {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
                 headers: {
