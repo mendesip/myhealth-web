@@ -38,7 +38,7 @@ class NCDList extends React.Component {
                     {this.props.ncds.length !== 0 &&
                     <List component="nav">
                         {this.props.ncds.map(ncd => (
-                            <ListItem button>
+                            <ListItem button key={ncd.ncd_id}>
                                 <ListItemText
                                     primary={ncdNames[ncd.ncd_id]}
                                     onClick={() => this.props.selectNcd(ncd.ncd_id)}

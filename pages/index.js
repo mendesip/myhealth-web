@@ -68,6 +68,11 @@ export default class Index extends React.Component{
         }
     };
 
+    backToNCD = () => {
+        console.log("PORRA");
+        this.setState({selectedNcd: null});
+    };
+
     render() {
         return (
             <Grid container
@@ -85,7 +90,11 @@ export default class Index extends React.Component{
                     selectNcd={this.setSelectedNcd}
                 />}
 
-                {this.state.selectedNcd !== null && <Dashboard />}
+                {this.state.selectedNcd !== null && <Dashboard
+                    ncd={this.state.selectedNcd}
+                    registers={this.state.registers}
+                    backToNCD={this.backToNCD}
+                />}
 
                 <DialogAccess
                     open={this.state.dialogAccessOpen}
